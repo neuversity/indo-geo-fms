@@ -83,7 +83,7 @@ app_license = "unlicense"
 # ------------
 
 # before_install = "indo_geo.install.before_install"
-# after_install = "indo_geo.install.after_install"
+after_install = "indo_geo.install.after_install"
 
 # Uninstallation
 # ------------

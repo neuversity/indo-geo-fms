@@ -1,0 +1,107 @@
+{
+  "actions": [],
+  "allow_copy": false,
+  "allow_events_in_timeline": false,
+  "allow_guest_to_view": false,
+  "allow_import": true,
+  "allow_rename": true,
+  "autoname": "field:district_code",
+  "beta": false,
+  "creation": "2025-01-01 00:00:00.000000",
+  "default_view": "List",
+  "doctype": "DocType",
+  "editable_grid": true,
+  "engine": "InnoDB",
+  "field_order": [
+    "district_code",
+    "district_name",
+    "regency",
+    "province",
+    "regency_code"
+  ],
+  "fields": [
+    {
+      "fieldname": "district_code",
+      "fieldtype": "Data",
+      "label": "District Code",
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "length": 7,
+      "unique": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "district_name",
+      "fieldtype": "Data",
+      "label": "District Name",
+      "in_list_view": 1,
+      "in_global_search": 1,
+      "in_standard_filter": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "regency",
+      "fieldtype": "Link",
+      "label": "Regency",
+      "options": "Regency",
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "province",
+      "fieldtype": "Link",
+      "label": "Province",
+      "options": "Province",
+      "in_standard_filter": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "regency_code",
+      "fieldtype": "Data",
+      "label": "Regency Code",
+      "read_only": 1,
+      "length": 4
+    }
+  ],
+  "icon": "fa fa-file-text",
+  "idx": 0,
+  "in_create": false,
+  "is_submittable": false,
+  "is_tree": false,
+  "issingle": false,
+  "istable": false,
+  "max_attachments": 0,
+  "modified": "2025-01-01 00:00:00.000000",
+  "modified_by": "Administrator",
+  "module": "Indo Geo",
+  "name": "District",
+  "naming_rule": "By fieldname",
+  "search_fields": "district_name,district_code",
+  "title_field": "district_name",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": true,
+      "delete": true,
+      "email": true,
+      "export": true,
+      "print": true,
+      "read": true,
+      "report": true,
+      "role": "System Manager",
+      "share": true,
+      "write": true
+    }
+  ],
+  "quick_entry": false,
+  "read_only": false,
+  "read_only_onload": false,
+  "show_name_in_global_search": false,
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": true,
+  "track_seen": false,
+  "track_views": false
+}
