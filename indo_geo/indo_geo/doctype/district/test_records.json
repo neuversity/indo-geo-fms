@@ -1,15 +1,15 @@
 [
   {
     "doctype": "District",
-    "district_name": "_Test District 1",
     "district_code": "9901001",
+    "district_name": "_Test District 1",
     "regency": "9901",
     "province": "99"
   },
   {
-    "doctype": "District",
-    "district_name": "_Test District 2",
+    "doctype": "District", 
     "district_code": "9901002",
+    "district_name": "_Test District 2",
     "regency": "9901",
     "province": "99"
   }

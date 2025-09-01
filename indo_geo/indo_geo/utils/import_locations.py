@@ -130,7 +130,7 @@ def import_districts(data_path):
                 district_code, district_name, regency_code = row[0].strip(), row[1].strip(), row[2].strip()
             else:
                 continue
-            
+
             # Check if already exists
             if frappe.db.exists("District", district_code):
                 continue
@@ -177,7 +177,7 @@ def import_villages(data_path):
                 village_code, village_name, district_code = row[0].strip(), row[1].strip(), row[2].strip()
             else:
                 continue
-            
+
             # Check if already exists
             if frappe.db.exists("Village", village_code):
                 continue

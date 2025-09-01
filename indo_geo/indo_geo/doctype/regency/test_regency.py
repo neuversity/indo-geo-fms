@@ -6,6 +6,8 @@ from frappe.tests.utils import FrappeTestCase
 
 from indo_geo.indo_geo.utils.import_locations import get_data_counts
 
+test_records = frappe.get_test_records("Regency")
+
 
 class TestRegency(FrappeTestCase):
 	def test_regency_data_import(self):

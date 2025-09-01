@@ -1,7 +1,7 @@
 [
   {
-    "doctype": "Province",
-    "province_name": "_Test Province 1",
+    "doctype": "Province", 
+    "province_name": "_Test Province",
     "province_code": "99"
   }
 ]

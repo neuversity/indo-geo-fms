@@ -5,6 +5,8 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 from indo_geo.indo_geo.utils.import_locations import get_data_counts
 
+test_records = frappe.get_test_records("Province")
+
 
 class TestProvince(FrappeTestCase):
 	def test_province_data_import(self):
