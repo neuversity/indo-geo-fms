@@ -1,0 +1,26 @@
+[
+  {
+    "doctype": "Village",
+    "village_name": "_Test Village 1",
+    "village_code": "9901001001",
+    "district": "9901001",
+    "regency": "9901",
+    "province": "99"
+  },
+  {
+    "doctype": "Village",
+    "village_name": "_Test Village 2",
+    "village_code": "9901001002",
+    "district": "9901001",
+    "regency": "9901",
+    "province": "99"
+  },
+  {
+    "doctype": "Village",
+    "village_name": "_Test Village 3",
+    "village_code": "9901002001",
+    "district": "9901002",
+    "regency": "9901",
+    "province": "99"
+  }
+]

@@ -16,6 +16,8 @@ def import_all_locations():
     # Import in order: Province -> Regency -> District -> Village
     import_provinces(data_path)
     import_regencies(data_path)
+    import_districts(data_path)
+    import_villages(data_path)
 
     print("Location data import completed successfully!")
 
@@ -105,7 +107,101 @@ def import_regencies(data_path):
         print(f"Errors: {len(errors)}")
         for error in errors[:10]:
             print(f"  - {error}")
+#
+def import_districts(data_path):
+    """Import districts from CSV file."""
+    file_path = os.path.join(data_path, "districts.csv")
+    if not os.path.exists(file_path):
+        frappe.throw(f"District data file not found: {file_path}")
+    print("Importing districts...")
+    count = 0
+    errors = []
+    with open(file_path, encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            # Handle both 2-column (actual data) and 3-column (test data) formats
+            if len(row) == 2:
+                # Actual data format: district_code, district_name
+                district_code, district_name = row[0].strip(), row[1].strip()
+                # Extract regency code from district code (first 4 digits)
+                regency_code = district_code[:4]
+            elif len(row) == 3:
+                # Test data format: district_code, district_name, regency_code
+                district_code, district_name, regency_code = row[0].strip(), row[1].strip(), row[2].strip()
+            else:
+                continue
+            
+            # Check if already exists
+            if frappe.db.exists("District", district_code):
+                continue
+            # Check if regency exists
+            if not frappe.db.exists("Regency", regency_code):
+                errors.append(f"Regency {regency_code} not found for district {district_code}")
+                continue
+            # Create new district
+            doc = frappe.new_doc("District")
+            doc.district_code = district_code
+            doc.district_name = district_name
+            doc.regency = regency_code
+            doc.province = regency_code[:2]  # Province code is first 2 digits of regency code
+            doc.insert(ignore_permissions=True)
+            count += 1
+            if count % 100 == 0:
+                frappe.db.commit()
+    frappe.db.commit()
+    print(f"Imported {count} districts")
+    if errors:
+        print(f"Errors: {len(errors)}")
+        for error in errors[:10]:
+            print(f"  - {error}")
 
+def import_villages(data_path):
+    """Import villages from CSV file."""
+    file_path = os.path.join(data_path, "villages.csv")
+    if not os.path.exists(file_path):
+        frappe.throw(f"Village data file not found: {file_path}")
+    print("Importing villages...")
+    count = 0
+    errors = []
+    with open(file_path, encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            # Handle both 2-column (actual data) and 3-column (test data) formats
+            if len(row) == 2:
+                # Actual data format: village_code, village_name
+                village_code, village_name = row[0].strip(), row[1].strip()
+                # Extract district code from village code (first 7 digits)
+                district_code = village_code[:7]
+            elif len(row) == 3:
+                # Test data format: village_code, village_name, district_code
+                village_code, village_name, district_code = row[0].strip(), row[1].strip(), row[2].strip()
+            else:
+                continue
+            
+            # Check if already exists
+            if frappe.db.exists("Village", village_code):
+                continue
+            # Check if district exists
+            if not frappe.db.exists("District", district_code):
+                errors.append(f"District {district_code} not found for village {village_code}")
+                continue
+            # Create new village
+            doc = frappe.new_doc("Village")
+            doc.village_code = village_code
+            doc.village_name = village_name
+            doc.district = district_code
+            doc.regency = district_code[:4]  # Regency code is first 4 digits of district code
+            doc.province = district_code[:2]  # Province code is first 2 digits of district code
+            doc.insert(ignore_permissions=True)
+            count += 1
+            if count % 200 == 0:
+                frappe.db.commit()
+    frappe.db.commit()
+    print(f"Imported {count} villages")
+    if errors:
+        print(f"Errors: {len(errors)}")
+        for error in errors[:10]:
+            print(f"  - {error}")
 
 def get_data_counts():
     """Get count of records in CSV files."""
