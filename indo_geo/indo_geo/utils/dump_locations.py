@@ -443,7 +443,7 @@ def convert_villages_csv_to_sql(data_path, sql_path):
                 province_code = district_code[:2]
                 now_str = now_datetime().strftime('%Y-%m-%d %H:%M:%S.%f')
 
-                values.append(f"('{escape_sql_string(village_code)}', '{now_str}', '{now_str}', 'Administrator', 'Administrator', 0, 0, '{escape_sql_string(village_code)}', '{escape_sql_string(village_name)}', '{escape_sql_string(district_code)}', '{escape_sql_string(regency_code)}', '{escape_sql_string(province_code)}', '{escape_sql_string(district_code)}')")
+                values.append(f"('{escape_sql_string(village_code)}', '{now_str}', '{now_str}', 'Administrator', 'Administrator', 0, 0, '{escape_sql_string(village_code)}', '{escape_sql_string(village_name)}', '{escape_sql_string(district_code)}', '{escape_sql_string(regency_code)}', '{escape_sql_string(province_code)}')")
 
                 total_count += 1
 
@@ -451,7 +451,7 @@ def convert_villages_csv_to_sql(data_path, sql_path):
                 if len(values) >= chunk_size:
                     chunk_num += 1
                     sqlfile.write(f"-- Chunk {chunk_num} ({len(values)} records)\n")
-                    sqlfile.write("INSERT INTO tabVillage (name, creation, modified, modified_by, owner, docstatus, idx, village_code, village_name, district, regency, province, district_code) VALUES\n")
+                    sqlfile.write("INSERT INTO tabVillage (name, creation, modified, modified_by, owner, docstatus, idx, village_code, village_name, district, regency, province) VALUES\n")
                     sqlfile.write(",\n".join(values))
                     sqlfile.write(";\n\n")
                     values = []
@@ -463,7 +463,7 @@ def convert_villages_csv_to_sql(data_path, sql_path):
             if values:
                 chunk_num += 1
                 sqlfile.write(f"-- Chunk {chunk_num} ({len(values)} records)\n")
-                sqlfile.write("INSERT INTO tabVillage (name, creation, modified, modified_by, owner, docstatus, idx, village_code, village_name, district, regency, province, district_code) VALUES\n")
+                sqlfile.write("INSERT INTO tabVillage (name, creation, modified, modified_by, owner, docstatus, idx, village_code, village_name, district, regency, province) VALUES\n")
                 sqlfile.write(",\n".join(values))
                 sqlfile.write(";\n")
 
