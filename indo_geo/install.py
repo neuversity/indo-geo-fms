@@ -1,6 +1,6 @@
 import frappe
 
-from indo_geo.indo_geo.utils.import_locations import import_all_locations
+from indo_geo.indo_geo.utils.import_locations import import_all_locations, import_all_locations_sql
 
 
 def after_install():

@@ -10,17 +10,19 @@ def import_all_locations():
     """Import all location data from CSV files."""
     print("Starting location data import...")
 
-    # Get the app path
-    app_path = frappe.get_app_path("indo_geo")
-    data_path = os.path.join(app_path, "..", "data")
+    import_all_locations_sql()
 
-    # Import in order: Province -> Regency -> District -> Village
-    import_provinces(data_path)
-    import_regencies(data_path)
-    import_districts(data_path)
-    import_villages(data_path)
-
-    print("Location data import completed successfully!")
+    # # Get the app path
+    # app_path = frappe.get_app_path("indo_geo")
+    # data_path = os.path.join(app_path, "..", "data")
+    #
+    # # Import in order: Province -> Regency -> District -> Village
+    # import_provinces(data_path)
+    # import_regencies(data_path)
+    # import_districts(data_path)
+    # import_villages(data_path)
+    #
+    # print("Location data import completed successfully!")
 
 
 def import_provinces(data_path):
