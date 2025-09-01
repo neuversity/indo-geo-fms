@@ -67,22 +67,3 @@ class Regency(Document):
 
 
 
-@frappe.whitelist()
-def get_regencies(province=None):
-    """Get regencies filtered by province for autocomplete"""
-    try:
-        filters = {}
-        if province:
-            filters["province"] = province
-
-        regencies = frappe.get_all(
-            "Regency",
-            filters=filters,
-            fields=["name", "regency_name", "regency_code", "province"],
-            order_by="regency_name asc"
-        )
-        return {"status": "success", "data": regencies}
-    except Exception as e:
-        frappe.log_error(f"Error fetching regencies: {e!s}")
-        return {"status": "error", "message": _("Error fetching regencies")}
-

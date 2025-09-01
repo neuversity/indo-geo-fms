@@ -55,17 +55,3 @@ class Province(Document):
         pass
 
 
-@frappe.whitelist()
-def get_provinces():
-    """Get all provinces for autocomplete"""
-    try:
-        provinces = frappe.get_all(
-            "Province",
-            fields=["name", "province_name", "province_code"],
-            order_by="province_name asc"
-        )
-        return {"status": "success", "data": provinces}
-    except Exception as e:
-        frappe.log_error(f"Error fetching provinces: {e!s}")
-        return {"status": "error", "message": _("Error fetching provinces")}
-
