@@ -9,8 +9,10 @@ import frappe
 from frappe.test_runner import make_test_records
 from frappe.tests.utils import FrappeTestCase
 
+frappe.flags.skip_test_records = False
+
 test_dependencies = ["Province", "Regency"]
-test_records = frappe.get_test_records("District")
+# test_records = frappe.get_test_records("District")
 
 class TestDistrict(FrappeTestCase):
     @classmethod
@@ -18,8 +20,8 @@ class TestDistrict(FrappeTestCase):
         """Set up test data once for all test methods."""
         super().setUpClass()
 
-        make_test_records("Province")
-        make_test_records("Regency")
+        # make_test_records("Province")
+        # make_test_records("Regency")
 
         # Load test records for dependencies
         frappe.get_test_records("Province")

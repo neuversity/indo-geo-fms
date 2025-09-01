@@ -227,10 +227,12 @@ CSV files location: `/indo_geo/data/`
 - Update documentation as needed
 - Ensure all tests pass before submitting PR
 
-## Acknowledgments
+## Acknowledgments & Credits
 
 - Indonesian Ministry of Home Affairs (Kemendagri) for administrative division data
 - Frappe Framework team for the excellent framework
+- Edward S. Pasaribu for initial data
+  [https://github.com/edwardsamuel/Wilayah-Administratif-Indonesia](https://github.com/edwardsamuael/Wilayah-Administratif-Indonesia)
 
 ---
 

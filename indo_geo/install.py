@@ -1,4 +1,5 @@
 import frappe
+
 from indo_geo.indo_geo.utils.import_locations import import_all_locations
 
 
@@ -9,6 +10,7 @@ def after_install():
         import_all_locations()
         print("Indo Geo setup completed successfully!")
     except Exception as e:
-        frappe.log_error(f"Error during Indo Geo setup: {str(e)}")
-        print(f"Error during setup: {str(e)}")
+        frappe.log_error(f"Error during Indo Geo setup: {e!s}")
+        print(f"Error during setup: {e!s}")
         raise
+

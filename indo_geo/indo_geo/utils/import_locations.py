@@ -1,5 +1,6 @@
 import csv
 import os
+import time
 
 import frappe
 from frappe.utils import cint
@@ -225,11 +226,281 @@ def get_data_counts():
     return counts
 
 
+# ===============================================
+# SQL BULK IMPORT METHODS (HIGH PERFORMANCE)
+# ===============================================
+
+def import_all_locations_sql():
+    """Import all location data using SQL bulk import (fast method)."""
+    print("Starting HIGH-PERFORMANCE SQL bulk import...")
+    start_time = time.time()
+
+    # Get the app path
+    app_path = frappe.get_app_path("indo_geo")
+    sql_path = os.path.join(app_path, "..", "data", "sql")
+
+    if not os.path.exists(sql_path):
+        print(f"SQL directory not found: {sql_path}")
+        print("Please run dump_locations.convert_csv_to_sql() first to generate SQL files")
+        return
+
+    # Import in order: Province -> Regency -> District -> Village
+    import_provinces_sql(sql_path)
+    import_regencies_sql(sql_path)
+    import_districts_sql(sql_path)
+    import_villages_sql(sql_path)
+
+    end_time = time.time()
+    print(f"HIGH-PERFORMANCE SQL bulk import completed in {end_time - start_time:.2f} seconds!")
+
+
+def import_provinces_sql(sql_path):
+    """Import provinces using SQL bulk insert."""
+    file_path = os.path.join(sql_path, "provinces.sql")
+
+    if not os.path.exists(file_path):
+        print(f"SQL file not found: {file_path}")
+        return
+
+    print("Bulk importing provinces...")
+    start_time = time.time()
+
+    # Check if data already exists
+    existing_count = frappe.db.count("Province")
+    if existing_count > 0:
+        print(f"Found {existing_count} existing provinces. Skipping import to avoid duplicates.")
+        return
+
+    # Execute SQL file
+    with open(file_path, encoding='utf-8') as f:
+        sql_content = f.read()
+
+    if sql_content.strip():
+        frappe.db.sql(sql_content)
+        frappe.db.commit()
+
+    # Get count of imported records
+    imported_count = frappe.db.count("Province")
+    end_time = time.time()
+
+    print(f"Bulk imported {imported_count} provinces in {end_time - start_time:.2f} seconds")
+
+
+def import_regencies_sql(sql_path):
+    """Import regencies using SQL bulk insert."""
+    file_path = os.path.join(sql_path, "regencies.sql")
+
+    if not os.path.exists(file_path):
+        print(f"SQL file not found: {file_path}")
+        return
+
+    print("Bulk importing regencies...")
+    start_time = time.time()
+
+    # Check if data already exists
+    existing_count = frappe.db.count("Regency")
+    if existing_count > 0:
+        print(f"Found {existing_count} existing regencies. Skipping import to avoid duplicates.")
+        return
+
+    # Validate dependencies first
+    province_count = frappe.db.count("Province")
+    if province_count == 0:
+        print("Error: No provinces found. Please import provinces first.")
+        return
+
+    # Execute SQL file
+    with open(file_path, encoding='utf-8') as f:
+        sql_content = f.read()
+
+    if sql_content.strip():
+        frappe.db.sql(sql_content)
+        frappe.db.commit()
+
+    # Get count of imported records
+    imported_count = frappe.db.count("Regency")
+    end_time = time.time()
+
+    print(f"Bulk imported {imported_count} regencies in {end_time - start_time:.2f} seconds")
+
+
+def import_districts_sql(sql_path):
+    """Import districts using SQL bulk insert."""
+    file_path = os.path.join(sql_path, "districts.sql")
+
+    if not os.path.exists(file_path):
+        print(f"SQL file not found: {file_path}")
+        return
+
+    print("Bulk importing districts...")
+    start_time = time.time()
+
+    # Check if data already exists
+    existing_count = frappe.db.count("District")
+    if existing_count > 0:
+        print(f"Found {existing_count} existing districts. Skipping import to avoid duplicates.")
+        return
+
+    # Validate dependencies first
+    regency_count = frappe.db.count("Regency")
+    if regency_count == 0:
+        print("Error: No regencies found. Please import regencies first.")
+        return
+
+    # Execute SQL file
+    with open(file_path, encoding='utf-8') as f:
+        sql_content = f.read()
+
+    if sql_content.strip():
+        frappe.db.sql(sql_content)
+        frappe.db.commit()
+
+    # Get count of imported records
+    imported_count = frappe.db.count("District")
+    end_time = time.time()
+
+    print(f"Bulk imported {imported_count} districts in {end_time - start_time:.2f} seconds")
+
+
+def import_villages_sql(sql_path):
+    """Import villages using SQL bulk insert."""
+    file_path = os.path.join(sql_path, "villages.sql")
+
+    if not os.path.exists(file_path):
+        print(f"SQL file not found: {file_path}")
+        return
+
+    print("Bulk importing villages...")
+    start_time = time.time()
+
+    # Check if data already exists
+    existing_count = frappe.db.count("Village")
+    if existing_count > 0:
+        print(f"Found {existing_count} existing villages. Skipping import to avoid duplicates.")
+        return
+
+    # Validate dependencies first
+    district_count = frappe.db.count("District")
+    if district_count == 0:
+        print("Error: No districts found. Please import districts first.")
+        return
+
+    # Execute SQL file in chunks to avoid memory issues
+    print("Reading village SQL file...")
+    with open(file_path, encoding='utf-8') as f:
+        content = f.read()
+
+    # Split by chunks (look for "-- Chunk" markers)
+    chunks = []
+    current_chunk = []
+
+    for line in content.split('\n'):
+        if line.strip().startswith('-- Chunk') and current_chunk:
+            chunks.append('\n'.join(current_chunk))
+            current_chunk = []
+        current_chunk.append(line)
+
+    if current_chunk:
+        chunks.append('\n'.join(current_chunk))
+
+    # Execute each chunk
+    total_chunks = len([c for c in chunks if 'INSERT INTO' in c])
+    if total_chunks == 0:
+        # Fallback: execute entire file
+        print("No chunks found, executing entire file...")
+        if content.strip():
+            frappe.db.sql(content)
+            frappe.db.commit()
+    else:
+        print(f"Executing {total_chunks} chunks...")
+        for i, chunk in enumerate(chunks, 1):
+            if 'INSERT INTO' in chunk:
+                print(f"  Processing chunk {i}/{total_chunks}...")
+                frappe.db.sql(chunk)
+                if i % 5 == 0:  # Commit every 5 chunks
+                    frappe.db.commit()
+
+        frappe.db.commit()
+
+    # Get count of imported records
+    imported_count = frappe.db.count("Village")
+    end_time = time.time()
+
+    print(f"Bulk imported {imported_count} villages in {end_time - start_time:.2f} seconds")
+
+
+def benchmark_import_methods():
+    """Benchmark CSV vs SQL import methods."""
+    print("=" * 60)
+    print("IMPORT PERFORMANCE BENCHMARK")
+    print("=" * 60)
+
+    # Clear existing data
+    clear_all_locations()
+
+    print("\n1. Testing CSV Import Method (Original)...")
+    start_time = time.time()
+    import_all_locations()
+    csv_time = time.time() - start_time
+    csv_counts = get_location_counts()
+
+    # Clear and test SQL method
+    clear_all_locations()
+
+    print("\n2. Testing SQL Import Method (Optimized)...")
+    start_time = time.time()
+    import_all_locations_sql()
+    sql_time = time.time() - start_time
+    sql_counts = get_location_counts()
+
+    # Results
+    print("\n" + "=" * 60)
+    print("BENCHMARK RESULTS")
+    print("=" * 60)
+    print("CSV Import Method:")
+    print(f"  Time: {csv_time:.2f} seconds")
+    print(f"  Records: {csv_counts}")
+    print("\nSQL Import Method:")
+    print(f"  Time: {sql_time:.2f} seconds")
+    print(f"  Records: {sql_counts}")
+
+    if sql_time > 0:
+        improvement = ((csv_time - sql_time) / csv_time) * 100
+        speedup = csv_time / sql_time
+        print("\nPerformance Improvement:")
+        print(f"  Speed increase: {speedup:.1f}x faster")
+        print(f"  Time reduction: {improvement:.1f}%")
+
+        # Projection for 80K villages
+        if 'villages' in csv_counts and csv_counts['villages'] > 0:
+            villages_per_second_csv = csv_counts['villages'] / csv_time
+            villages_per_second_sql = sql_counts['villages'] / sql_time
+
+            estimated_80k_csv = 80000 / villages_per_second_csv
+            estimated_80k_sql = 80000 / villages_per_second_sql
+
+            print("\nProjection for 80,000 Villages:")
+            print(f"  CSV method: ~{estimated_80k_csv/60:.1f} minutes")
+            print(f"  SQL method: ~{estimated_80k_sql/60:.1f} minutes")
+
+
+def get_location_counts():
+    """Get counts of location records in database."""
+    return {
+        'provinces': frappe.db.count("Province"),
+        'regencies': frappe.db.count("Regency"),
+        'districts': frappe.db.count("District"),
+        'villages': frappe.db.count("Village")
+    }
+
+
 def clear_all_locations():
     """Clear all location data (for testing purposes)."""
     print("Clearing all location data...")
 
-    # Delete in reverse order: Regency -> Province
+    # Delete in reverse order to respect foreign key constraints
+    frappe.db.delete("Village", {"name": ("!=", "")})
+    frappe.db.delete("District", {"name": ("!=", "")})
     frappe.db.delete("Regency", {"name": ("!=", "")})
     frappe.db.delete("Province", {"name": ("!=", "")})
 
